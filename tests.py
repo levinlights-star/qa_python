@@ -16,23 +16,29 @@ class TestBooksCollector:
         assert len(col.get_books_genre(
         )) == 2, "Должны добавиться обе валидные книги"  # Исправленный тест
 
-    # 2. Тест, что книга с названием более 40 символов не добавляется в books_genre
-    def test_add_new_book_long_name_not_added(self, col):
+    # 2. new Тест, что валидные названия добавляются
+    @pytest.mark.parametrize("valid_book_name, msg", [
+        ('А', "Один символ"),
+        ('Кот в сапогах', "13 символов"),
+        ('Г. Поттер и философский камень Д Роулинг', "40 символов")
+    ])
+    def test_add_book_add_valid_name_book(self, valid_book_name, msg, col):
 
-        long_name = 'Удивительное путешествие Нильса Хольгерссона с дикими гусями по Швеции'
-        col.add_new_book(long_name)
+        col.add_new_book(valid_book_name)
 
-        assert long_name not in col.get_books_genre(
-        ), "Книга с названием длиннее 40 символов не должна быть добавлена"
+        assert valid_book_name in col.books_genre, msg
 
-    # 3. Тест, что книга с пустым названием не добавляется в books_genre
-    def test_add_new_book_empty_name_not_added(self, col):
+    # 3. new Тест, что невалидные названия книг не добавляются
+    @pytest.mark.parametrize("invalid_book_name, msg", [
+        ('', "Пустое название(0 символов)"),
+        ('Г. Поттер и философский камень Д. Роулинг', "41 символов"),
+        ('Удивительное путешествие Нильса Хольгерссона с дикими гусями по Швеции', "70 символов")
+    ])
+    def test_add_book_add_invalid_name_book(self, invalid_book_name, msg, col):
 
-        empty_name = ''
-        col.add_new_book(empty_name)
+        col.add_new_book(invalid_book_name)
 
-        assert empty_name not in col.get_books_genre(
-        ), "Книга с пустым названием (0 символов) не должна быть добавлена"
+        assert invalid_book_name not in col.books_genre, msg
 
     # 4. Тест, что нельзя добавить уже существующую книгу (нельзя создать дубль)
     def test_add_new_book_duplicate_not_added(self, col):
@@ -176,13 +182,9 @@ class TestBooksCollector:
         assert len(col.get_list_of_favorites_books()) == 1
 
     # 19. Тест, что существующая книга, добавляется в избранное, у книги не установлен жанр
-    @pytest.mark.parametrize("book_name", [
-        'Ледяная принцесса',
-        'Война и мир',
-        'Тьма в бутылке'
-    ])
-    def test_add_book_in_favorites_add_book_without_genre(self, book_name, col):
+    def test_add_book_in_favorites_add_book_without_genre(self, col):
 
+        book_name = 'Ледяная принцесса'
         col.add_new_book(book_name)
         col.add_book_in_favorites(book_name)
 
