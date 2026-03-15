@@ -159,7 +159,8 @@ class TestBooksCollector:
         col.set_book_genre('Взрослая книга', adult_genre)
         col.add_new_book('Детская книга')
         col.set_book_genre('Детская книга', 'Мультфильмы')
-        assert len(col.get_books_for_children()) == 1
+        assert len(col.get_books_genre()) == 2
+        assert col.get_books_for_children() == ['Детская книга']
 
     # 17. Тест, что когда список пустой, поиск по детским книгам не падает
     def test_get_books_for_children_empty_returns_empty(self, col):
